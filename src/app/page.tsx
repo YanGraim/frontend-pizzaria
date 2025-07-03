@@ -2,14 +2,41 @@ import Image from "next/image";
 import styles from "./page.module.scss";
 import logoImg from "/public/logo.svg";
 import Link from "next/link";
+import { api } from "@/services/api";
+import { redirect } from "next/navigation";
 
 export default function Home() {
+  async function handleLogin(formData: FormData) {
+    "use server";
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    if (email === "" || password === "") {
+      console.log("Preencha todos os campos");
+      return;
+    }
+
+    try {
+      const response = await api.post("/session", {
+        email: email,
+        password: password,
+      });
+
+      if (!response.data.token) {
+        return;
+      }
+    } catch (error) {
+      console.log("Erro: ", error);
+      return;
+    }
+    redirect("/dashboard");
+  }
   return (
     <>
       <div className={styles.containerCenter}>
         <Image src={logoImg} alt="logo da pizza" />
         <section className={styles.login}>
-          <form>
+          <form action={handleLogin}>
             <input
               type="email"
               required

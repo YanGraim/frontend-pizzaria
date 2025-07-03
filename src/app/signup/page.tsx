@@ -25,6 +25,7 @@ export default function Signup() {
       });
     } catch (err) {
       console.log("Erro: ", err);
+      return;
     }
     redirect("/");
   }
