@@ -18,7 +18,7 @@ export function Header() {
   return (
     <header className={styles.headerContainer}>
       <div className={styles.headerContent}>
-        <Link href={"/"}>
+        <Link href={"/dashboard"}>
           <Image
             src={logoImg}
             alt="logo da pizzaria"
