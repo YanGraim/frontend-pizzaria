@@ -4,6 +4,8 @@ import styles from "./styles.module.scss";
 import { UploadCloud } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/app/dashboard/components/button";
+import { api } from "@/services/api";
+import { getCookieClient } from "@/lib/cookieCliente";
 
 interface CategoryProps {
   id: string;
@@ -17,6 +19,34 @@ interface Props {
 export function Form({ categories }: Props) {
   const [image, setImage] = useState<File>();
   const [previewImage, setPreviewImage] = useState("");
+
+  async function handleRegisterProducts(formData: FormData) {
+    const category = formData.get("category");
+    const name = formData.get("name");
+    const price = formData.get("price");
+    const description = formData.get("description");
+
+    if (!category || !name || !price || !description || !image) {
+      return;
+    }
+
+    const data = new FormData();
+    data.append("name", name);
+    data.append("price", price);
+    data.append("description", description);
+    data.append("category_id", categories[Number(category)].id);
+    data.append("file", image);
+
+    const token = await getCookieClient();
+
+    await api.post("/product", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("Cadastrado com sucesso!");
+  }
 
   function handleFile(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files[0]) {
@@ -35,7 +65,7 @@ export function Form({ categories }: Props) {
   return (
     <main className={styles.container}>
       <h1>Novo produto</h1>
-      <form className={styles.form}>
+      <form action={handleRegisterProducts} className={styles.form}>
         <label className={styles.labelImage}>
           <span>
             <UploadCloud size={40} color="#fff" />
