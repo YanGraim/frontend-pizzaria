@@ -6,6 +6,8 @@ import Image from "next/image";
 import { Button } from "@/app/dashboard/components/button";
 import { api } from "@/services/api";
 import { getCookieClient } from "@/lib/cookieCliente";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface CategoryProps {
   id: string;
@@ -19,6 +21,7 @@ interface Props {
 export function Form({ categories }: Props) {
   const [image, setImage] = useState<File>();
   const [previewImage, setPreviewImage] = useState("");
+  const router = useRouter();
 
   async function handleRegisterProducts(formData: FormData) {
     const category = formData.get("category");
@@ -27,6 +30,7 @@ export function Form({ categories }: Props) {
     const description = formData.get("description");
 
     if (!category || !name || !price || !description || !image) {
+      toast.warning("Preenche todos os campos");
       return;
     }
 
@@ -39,13 +43,20 @@ export function Form({ categories }: Props) {
 
     const token = await getCookieClient();
 
-    await api.post("/product", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    await api
+      .post("/product", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Falha ao cadastrar esse produto.");
+        return;
+      });
 
-    console.log("Cadastrado com sucesso!");
+    toast.success("Produto cadastrado com sucesso!");
+    router.push("/dashboard");
   }
 
   function handleFile(e: ChangeEvent<HTMLInputElement>) {
@@ -53,7 +64,7 @@ export function Form({ categories }: Props) {
       const image = e.target.files[0];
 
       if (image.type !== "image/jpeg" && image.type !== "image/png") {
-        console.log("Formato proibido");
+        toast.error("Formato não permitido");
         return;
       }
 
