@@ -13,8 +13,8 @@ interface Props {
 export function Orders({ orders }: Props) {
   const { isOpen, onRequestOpen } = use(OrderContext);
 
-  function handleDetailOrder() {
-    onRequestOpen();
+  async function handleDetailOrder(orderId: string) {
+    await onRequestOpen(orderId);
   }
 
   return (
@@ -31,7 +31,7 @@ export function Orders({ orders }: Props) {
             <button
               className={styles.orderItem}
               key={order.id}
-              onClick={handleDetailOrder}
+              onClick={() => handleDetailOrder(order.id)}
             >
               <div className={styles.tag}></div>
               <span>Mesa {order.table}</span>
