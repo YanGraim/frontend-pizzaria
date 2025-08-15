@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useState } from "react";
 import { toast } from "sonner";
 
-interface OrderItemProps {
+export interface OrderItemProps {
   id: string;
   amount: string;
   created_at: string;
